@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         registerSmbURLHandler();
 
+
         new Thread() {
 
             @Override
