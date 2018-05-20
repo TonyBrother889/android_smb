@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/android_smb.iml" filepath="$PROJECT_DIR$/.idea/android_smb.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/cifs.iml" filepath="$PROJECT_DIR$/cifs.iml" />
     </modules>
   </component>
 </project>

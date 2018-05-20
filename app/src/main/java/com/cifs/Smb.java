@@ -1,5 +1,6 @@
 package com.cifs;
 
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -36,6 +37,7 @@ public class Smb {
             e.printStackTrace();
         }
         List<String> fileNames = new ArrayList<String>();
+
         for (SmbFile smbFile : files) {
             if(smbFile.getName().indexOf(".EXP")!=-1){
                 fileNames.add(smbFile.getName());
