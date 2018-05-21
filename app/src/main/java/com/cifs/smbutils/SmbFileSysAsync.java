@@ -20,6 +20,7 @@ public class SmbFileSysAsync extends AsyncTask<String, String, SmbFile> {
     private String parentFileRoute;
     private String fileRoute;
     private boolean smbIsFile;
+    private String superlist;
 
     public SmbFileSysAsync(boolean isFile, String parentFileRoute, String fileRoute, GetSMBFileAsyncInterface getSMBFileAsyncInterface) {
         super();
@@ -38,7 +39,7 @@ public class SmbFileSysAsync extends AsyncTask<String, String, SmbFile> {
     @Override
     protected SmbFile doInBackground(String... strings) {
         url = parentFileRoute == null ? "smb://" + strings[0] + "/" : parentFileRoute + fileRoute;
-        Log.e("url", url);
+        superlist = parentFileRoute == null ? "smb://" + strings[0] + "/" : parentFileRoute;
         if (SmbLogin.smbLogin(strings[0], SmbLogin.getNtlmPasswordAuthentication(strings[0], null, null))) {
             onProgressUpdate("SMB登录成功");
             try {
@@ -77,11 +78,11 @@ public class SmbFileSysAsync extends AsyncTask<String, String, SmbFile> {
         if (smbFileList == null) {
             return;
         }
-        mGetSMBFileAsyncInterface.getReturnSMBFileInfo(smbIsFile, url, smbFile, smbFileList);
+        mGetSMBFileAsyncInterface.getReturnSMBFileInfo(smbIsFile, parentFileRoute, superlist, smbFile, smbFileList);
     }
 
     public interface GetSMBFileAsyncInterface {
 
-        void getReturnSMBFileInfo(boolean isFile, String url, SmbFile smbFile, List<SmbFile> smbFileList);
+        void getReturnSMBFileInfo(boolean isFile, String url, String superlist, SmbFile smbFile, List<SmbFile> smbFileList);
     }
 }

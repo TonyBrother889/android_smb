@@ -8,6 +8,27 @@ public class SmbFileModel {
     private String fileName;
     private String upperStrataRoute;
     private SmbFile smbFile;
+    private String superlist;
+    @Override
+    public String toString() {
+        return "SmbFileModel{" +
+                "isFile=" + isFile +
+                ", fileName='" + fileName + '\'' +
+                ", upperStrataRoute='" + upperStrataRoute + '\'' +
+                ", smbFile=" + smbFile +
+                ", superlist='" + superlist + '\'' +
+                '}';
+    }
+
+
+
+    public String getSuperlist() {
+        return superlist;
+    }
+
+    public void setSuperlist(String superlist) {
+        this.superlist = superlist;
+    }
 
     public SmbFile getSmbFile() {
         return smbFile;
@@ -25,7 +46,6 @@ public class SmbFileModel {
         this.upperStrataRoute = upperStrataRoute;
     }
 
-
     public boolean isFile() {
         return isFile;
     }
@@ -41,6 +61,5 @@ public class SmbFileModel {
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
-
 
 }

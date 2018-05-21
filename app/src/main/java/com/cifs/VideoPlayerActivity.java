@@ -1,0 +1,301 @@
+package com.cifs;
+
+import android.media.MediaPlayer;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.cifs.widget.MediaController;
+import com.pili.pldroid.player.AVOptions;
+import com.pili.pldroid.player.PLOnAudioFrameListener;
+import com.pili.pldroid.player.PLOnBufferingUpdateListener;
+import com.pili.pldroid.player.PLOnCompletionListener;
+import com.pili.pldroid.player.PLOnErrorListener;
+import com.pili.pldroid.player.PLOnInfoListener;
+import com.pili.pldroid.player.PLOnVideoFrameListener;
+import com.pili.pldroid.player.PLOnVideoSizeChangedListener;
+import com.pili.pldroid.player.widget.PLVideoView;
+
+import java.util.Arrays;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
+public class VideoPlayerActivity extends AppCompatActivity {
+
+
+   /* @InjectView(R.id.toolbar)
+    Toolbar toolbar;*/
+    @InjectView(R.id.VideoView)
+    PLVideoView mVideoView;
+    @InjectView(R.id.coverView)
+    ImageView mCoverView;
+    @InjectView(R.id.LoadingView)
+    LinearLayout loadingView;
+    @InjectView(R.id.StatInfoTextView)
+    TextView mStatInfoTextView;
+
+    private static final String TAG = VideoPlayerActivity.class.getSimpleName();
+    private MediaController mMediaController;
+
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_videoplayer);
+        ButterKnife.inject(this);
+      /*  setSupportActionBar(toolbar);*/
+      //  ActionBar supportActionBar = getSupportActionBar();
+        ///supportActionBar.setDisplayHomeAsUpEnabled(true);
+        //supportActionBar.setDisplayShowTitleEnabled(true);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        }
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        playMove(getIntent().getStringExtra(Constants.INTENT_MOVE_URL));
+
+    }
+
+    private void playMove(String moveUrl) {
+
+        Uri uri = Uri.parse(moveUrl);
+
+        Log.e("ppp",moveUrl);
+
+        int codec = AVOptions.MEDIA_CODEC_AUTO;
+
+        mVideoView.setCoverView(mCoverView);
+
+        mVideoView.setBufferingIndicator(loadingView);
+
+        AVOptions options = new AVOptions();
+        // the unit of timeout is ms
+        options.setInteger(AVOptions.KEY_PREPARE_TIMEOUT, 10 * 1000);
+        // 1 -> hw codec enable, 0 -> disable [recommended]
+        //解码模式
+        options.setInteger(AVOptions.KEY_MEDIACODEC, codec);
+        //直播还是点播
+        options.setInteger(AVOptions.KEY_LIVE_STREAMING, 1);
+
+//        options.setString(AVOptions.KEY_DNS_SERVER, "127.0.0.1");
+        options.setInteger(AVOptions.KEY_LOG_LEVEL, false ? 5 : 0);
+
+        mVideoView.setAVOptions(options);
+
+        // Set some listeners
+        mVideoView.setOnInfoListener(mOnInfoListener);
+        mVideoView.setOnVideoSizeChangedListener(mOnVideoSizeChangedListener);
+        mVideoView.setOnBufferingUpdateListener(mOnBufferingUpdateListener);
+        mVideoView.setOnCompletionListener(mOnCompletionListener);
+        mVideoView.setOnErrorListener(mOnErrorListener);
+        mVideoView.setOnVideoFrameListener(mOnVideoFrameListener);
+        mVideoView.setOnAudioFrameListener(mOnAudioFrameListener);
+
+       // mVideoView.setVideoPath("rtmp://live.hkstv.hk.lxdns.com/live/hks");
+
+        mVideoView.setVideoPath(moveUrl);
+
+        mVideoView.setLooping(true);
+
+        // You can also use a custom `MediaController` widget
+        mMediaController = new MediaController(this, false, false);
+        mMediaController.setOnClickSpeedAdjustListener(mOnClickSpeedAdjustListener);
+        mVideoView.setMediaController(mMediaController);
+
+    }
+
+    private PLOnInfoListener mOnInfoListener = new PLOnInfoListener() {
+        @Override
+        public void onInfo(int what, int extra) {
+            Log.i(TAG, "OnInfo, what = " + what + ", extra = " + extra);
+            switch (what) {
+                case PLOnInfoListener.MEDIA_INFO_BUFFERING_START:
+                    break;
+                case PLOnInfoListener.MEDIA_INFO_BUFFERING_END:
+                    break;
+                case PLOnInfoListener.MEDIA_INFO_VIDEO_RENDERING_START:
+                    Utils.showToastTips(VideoPlayerActivity.this, "first video render time: " + extra + "ms");
+                    break;
+                case PLOnInfoListener.MEDIA_INFO_AUDIO_RENDERING_START:
+                    break;
+                case PLOnInfoListener.MEDIA_INFO_VIDEO_FRAME_RENDERING:
+                    Log.i(TAG, "video frame rendering, ts = " + extra);
+                    break;
+                case PLOnInfoListener.MEDIA_INFO_AUDIO_FRAME_RENDERING:
+                    Log.i(TAG, "audio frame rendering, ts = " + extra);
+                    break;
+                case PLOnInfoListener.MEDIA_INFO_VIDEO_GOP_TIME:
+                    Log.i(TAG, "Gop Time: " + extra);
+                    break;
+                case PLOnInfoListener.MEDIA_INFO_SWITCHING_SW_DECODE:
+                    Log.i(TAG, "Hardware decoding failure, switching software decoding!");
+                    break;
+                case PLOnInfoListener.MEDIA_INFO_METADATA:
+                    Log.i(TAG, mVideoView.getMetadata().toString());
+                    break;
+                case PLOnInfoListener.MEDIA_INFO_VIDEO_BITRATE:
+                case PLOnInfoListener.MEDIA_INFO_VIDEO_FPS:
+                    updateStatInfo();
+                    break;
+                case PLOnInfoListener.MEDIA_INFO_CONNECTED:
+                    Log.i(TAG, "Connected !");
+                    break;
+                case PLOnInfoListener.MEDIA_INFO_VIDEO_ROTATION_CHANGED:
+                    Log.i(TAG, "Rotation changed: " + extra);
+                default:
+                    break;
+            }
+        }
+    };
+
+    private PLOnVideoSizeChangedListener mOnVideoSizeChangedListener = new PLOnVideoSizeChangedListener() {
+        @Override
+        public void onVideoSizeChanged(int width, int height) {
+            Log.i(TAG, "onVideoSizeChanged: width = " + width + ", height = " + height);
+        }
+    };
+
+    private PLOnBufferingUpdateListener mOnBufferingUpdateListener = new PLOnBufferingUpdateListener() {
+        @Override
+        public void onBufferingUpdate(int precent) {
+            Log.i(TAG, "onBufferingUpdate: " + precent);
+        }
+    };
+
+    private PLOnCompletionListener mOnCompletionListener = new PLOnCompletionListener() {
+        @Override
+        public void onCompletion() {
+            Log.i(TAG, "Play Completed !");
+            Utils.showToastTips(VideoPlayerActivity.this, "Play Completed !");
+            if (!false) {
+                mMediaController.refreshProgress();
+            }
+            //finish();
+        }
+    };
+
+    private PLOnErrorListener mOnErrorListener = new PLOnErrorListener() {
+        @Override
+        public boolean onError(int errorCode) {
+            Log.e(TAG, "Error happened, errorCode = " + errorCode);
+            switch (errorCode) {
+                case PLOnErrorListener.ERROR_CODE_IO_ERROR:
+                    /**
+                     * SDK will do reconnecting automatically
+                     */
+                    Log.e(TAG, "IO Error!");
+                    return false;
+                case PLOnErrorListener.ERROR_CODE_OPEN_FAILED:
+                    Utils.showToastTips(VideoPlayerActivity.this, "failed to open player !");
+                    break;
+                case PLOnErrorListener.ERROR_CODE_SEEK_FAILED:
+                    Utils.showToastTips(VideoPlayerActivity.this, "failed to seek !");
+                    break;
+                default:
+                    Utils.showToastTips(VideoPlayerActivity.this, "unknown error !");
+                    break;
+            }
+            finish();
+            return true;
+        }
+    };
+    private PLOnVideoFrameListener mOnVideoFrameListener = new PLOnVideoFrameListener() {
+        @Override
+        public void onVideoFrameAvailable(byte[] data, int size, int width, int height, int format, long ts) {
+            Log.i(TAG, "onVideoFrameAvailable: " + size + ", " + width + " x " + height + ", " + format + ", " + ts);
+            if (format == PLOnVideoFrameListener.VIDEO_FORMAT_SEI && bytesToHex(Arrays.copyOfRange(data, 19, 23)).equals("ts64")) {
+                // If the RTMP stream is from Qiniu
+                // Add &addtssei=true to the end of URL to enable SEI timestamp.
+                // Format of the byte array:
+                // 0:       SEI TYPE                    This is part of h.264 standard.
+                // 1:       unregistered user data      This is part of h.264 standard.
+                // 2:       payload length              This is part of h.264 standard.
+                // 3-18:    uuid                        This is part of h.264 standard.
+                // 19-22:   ts64                        Magic string to mark this stream is from Qiniu
+                // 23-30:   timestamp                   The timestamp
+                // 31:      0x80                        Magic hex in ffmpeg
+                Log.i(TAG, " timestamp: " + Long.valueOf(bytesToHex(Arrays.copyOfRange(data, 23, 31)), 16));
+            }
+        }
+    };
+
+    private PLOnAudioFrameListener mOnAudioFrameListener = new PLOnAudioFrameListener() {
+        @Override
+        public void onAudioFrameAvailable(byte[] data, int size, int samplerate, int channels, int datawidth, long ts) {
+            Log.i(TAG, "onAudioFrameAvailable: " + size + ", " + samplerate + ", " + channels + ", " + datawidth + ", " + ts);
+        }
+    };
+
+
+    private MediaController.OnClickSpeedAdjustListener mOnClickSpeedAdjustListener = new MediaController.OnClickSpeedAdjustListener() {
+        @Override
+        public void onClickNormal() {
+            // 0x0001/0x0001 = 2
+            mVideoView.setPlaySpeed(0X00010001);
+        }
+
+        @Override
+        public void onClickFaster() {
+            // 0x0002/0x0001 = 2
+            mVideoView.setPlaySpeed(0X00020001);
+        }
+
+        @Override
+        public void onClickSlower() {
+            // 0x0001/0x0002 = 0.5
+            mVideoView.setPlaySpeed(0X00010002);
+        }
+    };
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    private String bytesToHex(byte[] bytes) {
+        char[] hexArray = "0123456789ABCDEF".toCharArray();
+        char[] hexChars = new char[bytes.length * 2];
+        for (int j = 0; j < bytes.length; j++) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
+    }
+
+    private void updateStatInfo() {
+        long bitrate = mVideoView.getVideoBitrate() / 1024;
+        final String stat = bitrate + "kbps, " + mVideoView.getVideoFps() + "fps";
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mStatInfoTextView.setText(stat);
+            }
+        });
+    }
+}

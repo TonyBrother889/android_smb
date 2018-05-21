@@ -44,4 +44,5 @@ dependencies {
     configurations.all {
         resolutionStrategy.force 'com.android.support:support-annotations:22.1.0'
     }
+    implementation files('libs/pldroid-player-2.1.3.jar')
 }

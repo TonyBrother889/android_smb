@@ -21,7 +21,6 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import jcifs.smb.SmbException;
 
 public class SmbFileMusicPlay {
 
@@ -99,9 +98,6 @@ public class SmbFileMusicPlay {
                     audioTrack.stop();
                     audioTrack.release();
                     contentIn.close();
-                } catch (SmbException e) {
-                    e.printStackTrace();
-                    System.out.println("异常1...");
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                     System.out.println("异常2...");
