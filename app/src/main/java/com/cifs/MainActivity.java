@@ -62,10 +62,6 @@ public class MainActivity extends AppCompatActivity implements SmbFileSysAsync.G
 
         }
 
-        SmbFileMusicPlay fileMusicPlay = new SmbFileMusicPlay(this);
-        Log.e("111", ">>>");
-        fileMusicPlay.playFileStreamMusic(new File("/sdcard/许嵩 - 不语.mp3"));
-
     /*    new Thread() {
             @Override
             public void run() {
@@ -86,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements SmbFileSysAsync.G
     }
 
 
-    @Override
+/*    @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case 1:
@@ -103,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements SmbFileSysAsync.G
                 super.onRequestPermissionsResult(requestCode, permissions,
                         grantResults);
         }
-    }
+    }*/
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -160,8 +156,8 @@ public class MainActivity extends AppCompatActivity implements SmbFileSysAsync.G
             if (mSmbFileModel.getFileName().endsWith(".mp3")) {
                 String musicUrl = mSmbFileModel.getUpperStrataRoute() + mSmbFileModel.getFileName();
                 Log.e("mm", musicUrl);
-                SmbFileMusicPlay fileMusicPlay = new SmbFileMusicPlay(this);
-                //fileMusicPlay.playFileStreamMusic(musicUrl);
+                SmbFileMusicPlay2 fileMusicPlay = new SmbFileMusicPlay2(this);
+                fileMusicPlay.playFileStreamMusic(musicUrl);
             }
         } else {
             new SmbFileSysAsync(mSmbFileModel.isFile(), mSmbFileModel.getUpperStrataRoute(), mSmbFileModel.getFileName(), this).execute(Config.SMB_IP);

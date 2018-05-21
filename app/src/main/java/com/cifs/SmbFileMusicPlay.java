@@ -12,13 +12,6 @@ import android.util.Log;
 
 import com.cifs.music.AACDecoderUtil;
 
-import org.cybergarage.http.HTTPRequest;
-import org.cybergarage.http.HTTPRequestListener;
-import org.cybergarage.http.HTTPResponse;
-import org.cybergarage.http.HTTPServerList;
-import org.cybergarage.http.HTTPStatus;
-
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -29,8 +22,6 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import jcifs.smb.SmbException;
-import jcifs.smb.SmbFile;
-import jcifs.smb.SmbFileInputStream;
 
 public class SmbFileMusicPlay {
 
