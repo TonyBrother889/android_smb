@@ -41,4 +41,7 @@ dependencies {
     implementation 'com.jakewharton:butterknife:5.1.1'
     implementation files('libs/commons-io-1.4.jar')
     implementation files('libs/cybergarage-upnp-core-2.1.1.jar')
+    configurations.all {
+        resolutionStrategy.force 'com.android.support:support-annotations:22.1.0'
+    }
 }

@@ -1,6 +1,12 @@
 package com.cifs;
 
+import android.Manifest;
+import android.annotation.TargetApi;
+import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -13,10 +19,8 @@ import com.cifs.smbutils.Config;
 import com.cifs.smbutils.SmbFileModel;
 import com.cifs.smbutils.SmbFileSysAsync;
 
-import java.io.BufferedInputStream;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.UnknownHostException;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +28,6 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
-import jcifs.smb.SmbFileInputStream;
 
 public class MainActivity extends AppCompatActivity implements SmbFileSysAsync.GetSMBFileAsyncInterface, SmbFileListAdapter.OnItemClickListener {
 
@@ -37,6 +40,9 @@ public class MainActivity extends AppCompatActivity implements SmbFileSysAsync.G
     private ArrayList<SmbFileModel> smbFileModelArrayList;
     private SmbFileListAdapter smbFileListAdapter;
 
+    private static int REQUEST_CODE_ASK_PERMISSON = 1;
+
+    @TargetApi(Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,9 +52,58 @@ public class MainActivity extends AppCompatActivity implements SmbFileSysAsync.G
         ActionBar supportActionBar = getSupportActionBar();
         supportActionBar.setDisplayHomeAsUpEnabled(true);
         supportActionBar.setDisplayShowTitleEnabled(true);
-        new SmbFileSysAsync(false, null, null, this).execute(Config.SMB_IP);
+        //new SmbFileSysAsync(false, null, null, this).execute(Config.SMB_IP);
+
+        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    REQUEST_CODE_ASK_PERMISSON);
+        } else {
+
+        }
+
+        SmbFileMusicPlay fileMusicPlay = new SmbFileMusicPlay(this);
+        Log.e("111", ">>>");
+        fileMusicPlay.playFileStreamMusic(new File("/sdcard/许嵩 - 不语.mp3"));
+
+    /*    new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                try {
+                    Log.e("111", "+++++");
+                    MediaPlayer mediaPlayer = new MediaPlayer();
+                    mediaPlayer.setDataSource("/sdcard/许嵩 - 不语.mp3");
+                    mediaPlayer.prepare();
+                    mediaPlayer.start();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }.start();*/
+
     }
 
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permission Granted
+                    SmbFileMusicPlay fileMusicPlay = new SmbFileMusicPlay(this);
+                    Log.e("111", ">>>");
+                    fileMusicPlay.playFileStreamMusic(new File(Environment.getExternalStorageDirectory(), "许嵩 - 不语.mp3"));
+                } else {
+                    // Permission Denied
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions,
+                        grantResults);
+        }
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -72,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements SmbFileSysAsync.G
         } else {
             smbFileModelArrayList.clear();
         }
-        Log.e(">>>>", smbFileList.size()+"");
+        Log.e(">>>>", smbFileList.size() + "");
         for (int i = 0; i < smbFileList.size(); i++) {
             try {
                 SmbFile file = smbFileList.get(i);
@@ -106,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements SmbFileSysAsync.G
                 String musicUrl = mSmbFileModel.getUpperStrataRoute() + mSmbFileModel.getFileName();
                 Log.e("mm", musicUrl);
                 SmbFileMusicPlay fileMusicPlay = new SmbFileMusicPlay(this);
-                fileMusicPlay.playFileStreamMusic(musicUrl);
+                //fileMusicPlay.playFileStreamMusic(musicUrl);
             }
         } else {
             new SmbFileSysAsync(mSmbFileModel.isFile(), mSmbFileModel.getUpperStrataRoute(), mSmbFileModel.getFileName(), this).execute(Config.SMB_IP);
