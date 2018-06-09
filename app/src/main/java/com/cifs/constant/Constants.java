@@ -1,6 +1,6 @@
-package com.cifs;
+package com.cifs.constant;
 
-class Constants {
+public class Constants {
 
     public static final String INTENT_MOVE_URL="intent_move_url";
 }

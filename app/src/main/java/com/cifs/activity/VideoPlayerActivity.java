@@ -1,13 +1,8 @@
-package com.cifs;
+package com.cifs.activity;
 
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,8 +10,11 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.cifs.R;
+import com.cifs.base.BaseActivity;
+import com.cifs.constant.Constants;
+import com.cifs.utils.Utils;
 import com.cifs.widget.MediaController;
 import com.pili.pldroid.player.AVOptions;
 import com.pili.pldroid.player.PLOnAudioFrameListener;
@@ -33,11 +31,11 @@ import java.util.Arrays;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class VideoPlayerActivity extends AppCompatActivity {
+public class VideoPlayerActivity extends BaseActivity {
 
 
-   /* @InjectView(R.id.toolbar)
-    Toolbar toolbar;*/
+    /* @InjectView(R.id.toolbar)
+     Toolbar toolbar;*/
     @InjectView(R.id.VideoView)
     PLVideoView mVideoView;
     @InjectView(R.id.coverView)
@@ -49,15 +47,15 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
     private static final String TAG = VideoPlayerActivity.class.getSimpleName();
     private MediaController mMediaController;
-
+    private int mDisplayAspectRatio = PLVideoView.ASPECT_RATIO_FIT_PARENT;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_videoplayer);
         ButterKnife.inject(this);
-      /*  setSupportActionBar(toolbar);*/
-      //  ActionBar supportActionBar = getSupportActionBar();
+        /*  setSupportActionBar(toolbar);*/
+        //  ActionBar supportActionBar = getSupportActionBar();
         ///supportActionBar.setDisplayHomeAsUpEnabled(true);
         //supportActionBar.setDisplayShowTitleEnabled(true);
 
@@ -76,15 +74,11 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
     private void playMove(String moveUrl) {
 
-        Uri uri = Uri.parse(moveUrl);
-
-        Log.e("ppp",moveUrl);
-
-        int codec = AVOptions.MEDIA_CODEC_AUTO;
-
-        mVideoView.setCoverView(mCoverView);
+        int codec = AVOptions.MEDIA_CODEC_SW_DECODE;
 
         mVideoView.setBufferingIndicator(loadingView);
+
+        mVideoView.setCoverView(mCoverView);
 
         AVOptions options = new AVOptions();
         // the unit of timeout is ms
@@ -92,6 +86,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
         // 1 -> hw codec enable, 0 -> disable [recommended]
         //解码模式
         options.setInteger(AVOptions.KEY_MEDIACODEC, codec);
+
         //直播还是点播
         options.setInteger(AVOptions.KEY_LIVE_STREAMING, 1);
 
@@ -109,17 +104,63 @@ public class VideoPlayerActivity extends AppCompatActivity {
         mVideoView.setOnVideoFrameListener(mOnVideoFrameListener);
         mVideoView.setOnAudioFrameListener(mOnAudioFrameListener);
 
-       // mVideoView.setVideoPath("rtmp://live.hkstv.hk.lxdns.com/live/hks");
+        //  mVideoView.setVideoPath("rtmp://live.hkstv.hk.lxdns.com/live/hks");
 
-        mVideoView.setVideoPath(moveUrl);
+        //  mVideoView.setVideoPath(moveUrl);
 
-        mVideoView.setLooping(true);
+        mVideoView.setVideoPath("http://jzvd.nathen.cn/342a5f7ef6124a4a8faf00e738b8bee4/cf6d9db0bd4d41f59d09ea0a81e918fd-5287d2089db37e62345123a1be272f8b.mp4");
+
+
+        mVideoView.setLooping(false);
 
         // You can also use a custom `MediaController` widget
-        mMediaController = new MediaController(this, false, false);
+        mMediaController = new MediaController(this, true, false);
         mMediaController.setOnClickSpeedAdjustListener(mOnClickSpeedAdjustListener);
         mVideoView.setMediaController(mMediaController);
 
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mVideoView.start();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mVideoView.pause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mVideoView.stopPlayback();
+    }
+
+    public void onClickSwitchScreen(View v) {
+        mDisplayAspectRatio = (mDisplayAspectRatio + 1) % 5;
+        mVideoView.setDisplayAspectRatio(mDisplayAspectRatio);
+        switch (mVideoView.getDisplayAspectRatio()) {
+            case PLVideoView.ASPECT_RATIO_ORIGIN:
+                Utils.showToastTips(this, "Origin mode");
+                break;
+            case PLVideoView.ASPECT_RATIO_FIT_PARENT:
+                Utils.showToastTips(this, "Fit parent !");
+                break;
+            case PLVideoView.ASPECT_RATIO_PAVED_PARENT:
+                Utils.showToastTips(this, "Paved parent !");
+                break;
+            case PLVideoView.ASPECT_RATIO_16_9:
+                Utils.showToastTips(this, "16 : 9 !");
+                break;
+            case PLVideoView.ASPECT_RATIO_4_3:
+                Utils.showToastTips(this, "4 : 3 !");
+                break;
+            default:
+                break;
+        }
     }
 
     private PLOnInfoListener mOnInfoListener = new PLOnInfoListener() {

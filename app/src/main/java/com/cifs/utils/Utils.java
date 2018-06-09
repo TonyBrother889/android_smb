@@ -1,4 +1,4 @@
-package com.cifs;
+package com.cifs.utils;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

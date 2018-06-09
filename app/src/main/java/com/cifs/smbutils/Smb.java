@@ -1,4 +1,4 @@
-package com.cifs;
+package com.cifs.smbutils;
 
 
 import java.io.BufferedInputStream;

@@ -1,11 +1,14 @@
-package com.cifs;
+package com.cifs.activity;
 
 import android.annotation.SuppressLint;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.SeekBar;
+
+import com.cifs.base.BaseActivity;
 
 import java.io.IOException;
 import java.util.Timer;
@@ -15,7 +18,7 @@ import java.util.TimerTask;
  * Created by zhangxiang on 2018/4/26.
  */
 
-public class MusicPlay implements MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener {
+public class MusicPlayActivity extends BaseActivity implements MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener {
 
 
     public MediaPlayer mediaPlayer; // 媒体播放器
@@ -23,7 +26,7 @@ public class MusicPlay implements MediaPlayer.OnBufferingUpdateListener, MediaPl
     private Timer mTimer = new Timer(); // 计时器
 
     // 初始化播放器
-    public MusicPlay(SeekBar seekBar) {
+    public MusicPlayActivity(SeekBar seekBar) {
         super();
       //  this.seekBar = seekBar;
         try {
