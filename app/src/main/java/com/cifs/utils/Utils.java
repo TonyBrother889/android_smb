@@ -25,4 +25,17 @@ public class Utils {
     public static void showToastTips(final Context context, final String tips) {
         Toast.makeText(context, tips, Toast.LENGTH_SHORT).show();
     }
+
+
+    /**单位转换*/
+    //long==> 616.19KB,3.73M
+    public static String sizeFormatNum2String(long size) {
+        double pers = 1024*1024;
+        String s = "";
+        if(size>1024*1024)
+            s=String.format("%.2f", (double)size/pers)+"M";
+        else
+            s=String.format("%.2f", (double)size/(1024))+"KB";
+        return s;
+    }
 }

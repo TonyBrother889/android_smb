@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
 
     <!--   <android.support.v7.widget.Toolbar
            android:id="@+id/toolbar"
@@ -24,12 +26,12 @@
 
     <LinearLayout
         android:id="@+id/LoadingView"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
-        android:orientation="horizontal"
-        android:visibility="gone">
+        android:orientation="horizontal">
 
         <ProgressBar
             android:layout_width="wrap_content"
@@ -65,10 +67,10 @@
         android:id="@+id/StatInfoTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|left"
-        android:layout_margin="20dp"
         android:textColor="@android:color/white"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:layout_gravity="top|left"
+        android:layout_margin="20dp" />
 
 
 </FrameLayout>

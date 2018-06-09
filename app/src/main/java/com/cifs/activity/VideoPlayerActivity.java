@@ -106,9 +106,9 @@ public class VideoPlayerActivity extends BaseActivity {
 
         //  mVideoView.setVideoPath("rtmp://live.hkstv.hk.lxdns.com/live/hks");
 
-        //  mVideoView.setVideoPath(moveUrl);
+          mVideoView.setVideoPath(moveUrl);
 
-        mVideoView.setVideoPath("http://jzvd.nathen.cn/342a5f7ef6124a4a8faf00e738b8bee4/cf6d9db0bd4d41f59d09ea0a81e918fd-5287d2089db37e62345123a1be272f8b.mp4");
+       // mVideoView.setVideoPath("http://jzvd.nathen.cn/342a5f7ef6124a4a8faf00e738b8bee4/cf6d9db0bd4d41f59d09ea0a81e918fd-5287d2089db37e62345123a1be272f8b.mp4");
 
 
         mVideoView.setLooping(false);

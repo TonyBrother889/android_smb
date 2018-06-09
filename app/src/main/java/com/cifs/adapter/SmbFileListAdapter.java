@@ -57,6 +57,7 @@ public class SmbFileListAdapter extends BaseAdapter {
         viewHolder = (ViewHolder) view.getTag();
         final SmbFileModel smbFileModel = smbFileModelArrayList.get(i);
         viewHolder.tvFileName.setText(smbFileModel.getFileName());
+        viewHolder.tvFileSize.setText(smbFileModel.getSize());
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -69,6 +70,8 @@ public class SmbFileListAdapter extends BaseAdapter {
     static class ViewHolder {
         @InjectView(R.id.tv_file_name)
         TextView tvFileName;
+        @InjectView(R.id.tv_file_size)
+        TextView tvFileSize;
 
         ViewHolder(View view) {
             ButterKnife.inject(this, view);

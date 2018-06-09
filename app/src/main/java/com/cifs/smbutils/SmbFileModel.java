@@ -9,6 +9,7 @@ public class SmbFileModel {
     private String upperStrataRoute;
     private SmbFile smbFile;
     private String superlist;
+    private String size;
     @Override
     public String toString() {
         return "SmbFileModel{" +
@@ -17,9 +18,18 @@ public class SmbFileModel {
                 ", upperStrataRoute='" + upperStrataRoute + '\'' +
                 ", smbFile=" + smbFile +
                 ", superlist='" + superlist + '\'' +
+                ", size='" + size + '\'' +
                 '}';
     }
 
+
+    public String getSize() {
+        return size;
+    }
+
+    public void setSize(String size) {
+        this.size = size;
+    }
 
 
     public String getSuperlist() {

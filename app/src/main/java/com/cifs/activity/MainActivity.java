@@ -22,6 +22,7 @@ import com.cifs.smbutils.Config;
 import com.cifs.smbutils.SmbFileModel;
 import com.cifs.smbutils.SmbFileSysAsync;
 import com.cifs.smbutils.smbstreamer.Streamer;
+import com.cifs.utils.Utils;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -59,8 +60,6 @@ public class MainActivity extends BaseActivity implements SmbFileSysAsync.GetSMB
     }
 
 
-
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -93,6 +92,9 @@ public class MainActivity extends BaseActivity implements SmbFileSysAsync.GetSMB
                 smbFileModel.setUpperStrataRoute(file.getParent());
                 smbFileModel.setSmbFile(smbFile);
                 smbFileModel.setSuperlist(superlist);
+                if (file.isFile()) {
+                    smbFileModel.setSize(Utils.sizeFormatNum2String(file.length()));
+                }
                 smbFileModelArrayList.add(smbFileModel);
             } catch (SmbException e) {
                 e.printStackTrace();
@@ -128,7 +130,7 @@ public class MainActivity extends BaseActivity implements SmbFileSysAsync.GetSMB
 
                     String url = Streamer.URL + Uri.fromFile(new File(Uri.parse(videoUrl).getPath())).getEncodedPath();
 
-                    Intent intent = new Intent(this, VideoPlayerActivity.class);
+                    Intent intent = new Intent(this, VideoPlayerActivity2.class);
 
                     intent.putExtra(Constants.INTENT_MOVE_URL, url);
 
@@ -143,4 +145,5 @@ public class MainActivity extends BaseActivity implements SmbFileSysAsync.GetSMB
         }
         toolbar.setTitle(smbFileModel.getSuperlist());
     }
+
 }
